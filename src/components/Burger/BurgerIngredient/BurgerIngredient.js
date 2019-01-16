@@ -1,5 +1,5 @@
 import React from 'react';
-import classes from './BurgerIngredient.css'''
+import classes from './BurgerIngredient.css'
 
 const burgerIngregient = (props) => {
 	let ingredient = null;
