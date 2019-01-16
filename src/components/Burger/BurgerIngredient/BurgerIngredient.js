@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classes from './BurgerIngredient.css'
 
-class BurgerIngregient extends Component {
-	redner() {
+class BurgerIngredient extends Component {
+	render() {
 		let ingredient = null;
 
 		// исходя из пришедшего в props типа ингридиента, возвращаем JSX с соответствующими классами
@@ -40,8 +40,8 @@ class BurgerIngregient extends Component {
 }
 
 // проверка на тип типа - должен быть строкой Обязательно
-BurgerIngregient.propTypes = {
+BurgerIngredient.propTypes = {
 	type: PropTypes.string.isRequired
 };
 
-export default BurgerIngregient;
+export default BurgerIngredient;
