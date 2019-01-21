@@ -4,7 +4,7 @@ import BurgerIngredient from './BurgerIngredient/BurgerIngredient';
 
 const burger = (props) => {
 
-	const transformIngredients = Object.keys(props.ingredients)
+	let transformIngredients = Object.keys(props.ingredients)
 		//Object.keys() извлекает ключи данного объекта и превращает их в массив
 		//cheese: 2 = cheese 
 		.map(igKey => {
@@ -17,9 +17,20 @@ const burger = (props) => {
 					//первый аргумент нам тут не нужен, поэтому _
 					return <BurgerIngredient key={igKey + i} type={igKey} />
 					// key = cheese2, type = cheese
-				})
-		});
-	console.log(transformIngredients);
+				});
+		})
+		.reduce((arr, el) => {
+			// reduce принимает функцию в кач-ве входных данных, которая выполняется на каждому элементе массива
+			// и эта ф-ция получает 2 аргумента (prev, curr) автоматически передаваемых в js. 
+			// А так же 2м аргументом reduce принимает начальное значение, у нас это [].
+			return arr.concat(el)
+			// пройдем по всем эл-там и добавим их в начальное значение. Каждый шаг новое значение
+			// вместо [] передаётся в аргумент arr
+		}, []);
+
+	if (transformIngredients.length === 0) {
+		transformIngredients = <p>Please start adding ingredients!</p>
+	}
 
 	return (
 		<div className={classes.Burger}>
