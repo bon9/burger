@@ -81,6 +81,10 @@ class BurgerBuilder extends Component {
 		this.setState({ purchasing: false });
 	};
 
+	purchaseContinueHadler = () => {
+		alert('You continue!');
+	}
+
 	render() {
 		const disabledInfo = {
 			...this.state.ingredients // копируем текущее сост
@@ -99,7 +103,12 @@ class BurgerBuilder extends Component {
 					show={this.state.purchasing}
 					// фон при активном модальном окне
 					modalClosed={this.purchaseCancelHandler}>
-					<OrderSummary ingredients={this.state.ingredients} />
+					<OrderSummary
+						ingredients={this.state.ingredients}
+						// кнопка Cancel в модальном 
+						purchaseCancelled={this.purchaseCancelHandler}
+						// кнопка Continue в модальном 
+						purchaseContinued={this.purchaseContinueHadler} />
 				</Modal>
 				<Burger ingredients={this.state.ingredients} />
 				<BuildControls
