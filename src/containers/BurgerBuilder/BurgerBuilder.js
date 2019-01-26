@@ -77,6 +77,10 @@ class BurgerBuilder extends Component {
 		this.setState({ purchasing: true });
 	}
 
+	purchaseCancelHandler = () => {
+		this.setState({ purchasing: false });
+	};
+
 	render() {
 		const disabledInfo = {
 			...this.state.ingredients // копируем текущее сост
@@ -90,7 +94,11 @@ class BurgerBuilder extends Component {
 
 		return (
 			<Aux>
-				<Modal show={this.state.purchasing}>
+				<Modal
+					// отображение модального окна
+					show={this.state.purchasing}
+					// фон при активном модальном окне
+					modalClosed={this.purchaseCancelHandler}>
 					<OrderSummary ingredients={this.state.ingredients} />
 				</Modal>
 				<Burger ingredients={this.state.ingredients} />
