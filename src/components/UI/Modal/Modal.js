@@ -9,7 +9,8 @@ class Modal extends Component {
 		// если при обновлении обновленный show равен текущему
 		// то вернёт false и компонент не обновится
 		// то есть ререндерим Modal, только если show нового рендера отличается от текущего
-		return nextProps.show !== this.props.show;
+		// и если дети отличаются (т.к. спиннер это ребенок)
+		return nextProps.show !== this.props.show || nextProps.children !== this.props.children;
 	}
 
 	componentWillUpdate() {
