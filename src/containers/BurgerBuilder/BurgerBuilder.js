@@ -20,21 +20,38 @@ class BurgerBuilder extends Component {
 		ingredients: null,
 		totalPrice: 4,
 		purchaseble: false, // Order button active on/off
-		purchasing: false, // отображение модального окна
-		loading: false,
+		purchasing: false, // отображение orderSummary
+		loading: false, // for spinner
 		error: false
 	}
 
 	componentDidMount() {
 		axios.get('/ingredients.json')
 			.then(response => {
-				this.setState({ ingredients: response.data })
+				this.setState({ ingredients: response.data });
+				console.log(this.state.ingredients);
+				this.priceCalculation(this.state.ingredients);
 			})
 			.catch(error => {
 				this.setState({ error: true })
 			})
 	}
 
+	priceCalculation(ingredients) {
+		const updatedIngredients = {
+			...ingredients
+		};
+		const defaultPrice = this.state.totalPrice;
+		const dataPrice = Object.keys(updatedIngredients) // ['salad', 'bacon']
+			.map(igKey => { // igKey = bacon и т.д.
+				return updatedIngredients[igKey] * INGREDIENT_PRICES[igKey]; // количество * цену
+			})
+			.reduce((sum, el) => {
+				return sum + el; // [0 + 5 + 3]
+			}, defaultPrice);
+		this.setState({ totalPrice: dataPrice });
+		this.setState({ purchaseble: dataPrice > defaultPrice });
+	}
 
 	addIngredientHandler = (type) => {
 		const oldCount = this.state.ingredients[type]; // старое кол-во
