@@ -28,29 +28,33 @@ class BurgerBuilder extends Component {
 	componentDidMount() {
 		axios.get('/ingredients.json')
 			.then(response => {
-				this.setState({ ingredients: response.data });
-				console.log(this.state.ingredients);
-				this.priceCalculation(this.state.ingredients);
+				this.priceCalculation(response.data);
 			})
 			.catch(error => {
-				this.setState({ error: true })
+				this.setState({ error: true });
+				// this.setState({ ingredients: { 'salad': 0, 'bacon': 0, 'cheese': 0, 'meat': 0 } })
 			})
 	}
 
 	priceCalculation(ingredients) {
-		const updatedIngredients = {
-			...ingredients
-		};
+		// const updatedIngredients = {
+		// 	...ingredients
+		// };
 		const defaultPrice = this.state.totalPrice;
-		const dataPrice = Object.keys(updatedIngredients) // ['salad', 'bacon']
+		const dataPrice = Object.keys(ingredients) // ['salad', 'bacon']
 			.map(igKey => { // igKey = bacon и т.д.
-				return updatedIngredients[igKey] * INGREDIENT_PRICES[igKey]; // количество * цену
+				return ingredients[igKey] * INGREDIENT_PRICES[igKey]; // количество * цену
 			})
 			.reduce((sum, el) => {
 				return sum + el; // [0 + 5 + 3]
 			}, defaultPrice);
-		this.setState({ totalPrice: dataPrice });
-		this.setState({ purchaseble: dataPrice > defaultPrice });
+
+		this.setState({
+			totalPrice: dataPrice,
+			purchaseble: dataPrice > defaultPrice,
+			ingredients
+		});
+		console.log(this.state.ingredients);
 	}
 
 	addIngredientHandler = (type) => {
