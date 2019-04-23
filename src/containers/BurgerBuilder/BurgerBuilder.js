@@ -54,7 +54,6 @@ class BurgerBuilder extends Component {
 			purchaseble: dataPrice > defaultPrice,
 			ingredients
 		});
-		console.log(this.state.ingredients);
 	}
 
 	addIngredientHandler = (type) => {
@@ -170,7 +169,7 @@ class BurgerBuilder extends Component {
 						disabled={disabledInfo} // Less button on/off
 						price={this.state.totalPrice}
 						purchaseble={this.state.purchaseble} // Order button active on/off
-						ordered={this.purchaseHandler}  // Order button click on/off
+						ordered={this.purchaseHandler}  // Order button click
 					/>
 				</Aux>
 			);
@@ -189,7 +188,7 @@ class BurgerBuilder extends Component {
 		return (
 			<Aux>
 				<Modal
-					// отображение модального окна
+					// отображение модального окна 
 					show={this.state.purchasing}
 					// фон при активном модальном окне
 					modalClosed={this.purchaseCancelHandler}>
