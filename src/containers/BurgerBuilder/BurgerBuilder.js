@@ -9,82 +9,16 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
-import * as actionTypes from '../../store/action';
+import * as actions from '../../store/actions/index';
 
 class BurgerBuilder extends Component {
 	state = {
 		purchasing: false, // отображение orderSummary
-		loading: false, // for spinner
-		error: false
 	}
 
 	componentDidMount() {
-		// axios.get('/ingredients.json') 
-		// 	.then(response => {
-		// 		this.priceCalculation(response.data);
-		// 	})
-		// 	.catch(error => {
-		// 		this.setState({ error: true });
-		// 		// this.setState({ ingredients: { 'salad': 0, 'bacon': 0, 'cheese': 0, 'meat': 0 } })
-		// 	})
+		this.props.onInitIngredients();
 	}
-
-/*
-	priceCalculation(ingredients) {
-		// const updatedIngredients = {
-		// 	...ingredients
-		// };
-		const defaultPrice = this.state.totalPrice;
-		const dataPrice = Object.keys(ingredients) // ['salad', 'bacon']
-			.map(igKey => { // igKey = bacon и т.д.
-				return ingredients[igKey] * INGREDIENT_PRICES[igKey]; // количество * цену
-			})
-			.reduce((sum, el) => {
-				return sum + el; // [0 + 5 + 3]
-			}, defaultPrice);
-
-		this.setState({
-			totalPrice: dataPrice,
-			purchaseble: dataPrice > defaultPrice,
-			ingredients
-		});
-	}
-	
-	addIngredientHandler = (type) => {
-		const oldCount = this.state.ingredients[type]; // старое кол-во
-		const updatedCounted = oldCount + 1; // увеличиваем на 1
-		const updatedIngredients = { // копируем, а не даём ссылку
-			...this.state.ingredients
-		};
-		// в новом объекте присваиваем новое кол-во
-		updatedIngredients[type] = updatedCounted;
-		const priceAddition = INGREDIENT_PRICES[type]; // цена добавленного инг-та
-		const oldPrice = this.state.totalPrice; // старая сумма
-		const newPrice = oldPrice + priceAddition; // старая сумма + цена добавляемого инг-та
-		// обновляем состояние
-		this.setState({ totalPrice: newPrice, ingredients: updatedIngredients })
-		this.updatePurchaseState(updatedIngredients);
-	}
-
-	removeIngredientHandler = (type) => {
-		const oldCount = this.state.ingredients[type];
-		if (oldCount <= 0) { // если не положительное число, сразу возвращаем
-			return;
-		}
-		const updatedCounted = oldCount - 1;
-		const updatedIngredients = { // копируем текущее сост, а не даём ссылку
-			...this.state.ingredients
-		};
-		// в новом объекте присваиваем новое кол-во
-		updatedIngredients[type] = updatedCounted;
-		const priceDeduction = INGREDIENT_PRICES[type]; // цена добавленного инг-та
-		const oldPrice = this.state.totalPrice; // старая сумма
-		const newPrice = oldPrice - priceDeduction; // старая сумма + цена добавляемого инг-та
-		// обновляем состояние
-		this.setState({ totalPrice: newPrice, ingredients: updatedIngredients })
-		this.updatePurchaseState(updatedIngredients);
-	}
-	*/
 
 	updatePurchaseState = (ingredients) => {
 		// salad: 5, bacon: 3 ..
@@ -108,6 +42,7 @@ class BurgerBuilder extends Component {
 	};
 
 	purchaseContinueHadler = () => {
+		this.props.onInitPurchase();
 		this.props.history.push('/checkout');
 	}
 
@@ -124,8 +59,7 @@ class BurgerBuilder extends Component {
 		}
 
 		let orderSummary = null;
-		let burger = this.state.error ? <p>Ingredients can't be loaded</p> : <Spinner />;
-
+		let burger = this.props.error ? <p>Ingredients can't be loaded</p> : <Spinner />;
 		// как только ингридиенты считываются с базы в стейт, то выводи ...
 		if (this.props.ings) {
 			burger = (
@@ -149,9 +83,6 @@ class BurgerBuilder extends Component {
 				// кнопка Continue в модальном 
 				purchaseContinued={this.purchaseContinueHadler}
 				price={this.props.price} />
-			if (this.state.loading) {
-				orderSummary = <Spinner />;
-			}
 		}
 
 		return (
@@ -171,15 +102,18 @@ class BurgerBuilder extends Component {
 
 const mapStateToProps = state => {
 	return {
-		ings: state.ingredients,
-		price: state.totalPrice.toFixed(2)
+		ings: state.burgerBuilder.ingredients,
+		price: state.burgerBuilder.totalPrice.toFixed(2),
+		error: state.burgerBuilder.error
 	}
 }
 
 const mapDispatchToProps = dispatch => {
-	return {
-		onIngredientAdd: (ingName) => dispatch({type: actionTypes.ADD_INGREDIENT, ingredientName: ingName}),
-		onIngredientRemove: (ingName) => dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName})
+	return { 
+		onIngredientAdd: (ingName) => dispatch(actions.addIngredient(ingName)),
+		onIngredientRemove: (ingName) => dispatch(actions.removeIngredient(ingName)),
+		onInitIngredients: () => dispatch(actions.initIngredients()),
+		onInitPurchase: () => dispatch(actions.purchaseInit())
 	}
 }
 

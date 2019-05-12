@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import ContactData from './ContactData/ContactData';
@@ -16,8 +16,14 @@ class Checkout extends Component {
 	}
 
 	render() {
-		return (
-			<div>
+		let summary = <Redirect to="/" />
+		if (this.props.ings) {
+			// если заказ отправлен, то перенаправит на домашнюю
+			// состояние переключается BurgerBuilder при клике в форме на Order (onInitPurchase)
+			const purchasedRedirect = this.props.purchased ? <Redirect to="/" /> : null;
+			summary = (
+				<div>
+				{purchasedRedirect}
 				<CheckoutSummary
 					ingredients={this.props.ings}
 					checkoutCancelled={this.checkoutCancelledHandler}
@@ -25,24 +31,20 @@ class Checkout extends Component {
 				<Route
 					path={this.props.match.path + '/contact-data'}
 					component={ContactData} />
-					 />
-			</div>
-		);
+				</div>
+			);
+		}
+		return summary;
 	}
 
 }
 
 const mapStateToProps = state => {
 	return {
-		ings: state.ingredients
+		ings: state.burgerBuilder.ingredients,
+		purchased: state.order.purchased
 	}
 }
-
-// const mapDispatchToProps = dispatch => {
-// 	return {
-
-// 	}
-// }
 
 // если бы было только mapDispatchToProps, то первый аргумент нужен null
 export default connect(mapStateToProps)(Checkout);
