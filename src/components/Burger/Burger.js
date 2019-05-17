@@ -6,6 +6,7 @@ import classes from './Burger.css';
 import BurgerIngredient from './BurgerIngredient/BurgerIngredient';
 
 const burger = (props) => {
+
 	let transformIngredients = Object.keys(props.ingredients)
 		//Object.keys() извлекает ключи данного объекта и превращает их в массив
 		//cheese: 2 = cheese 
@@ -29,6 +30,7 @@ const burger = (props) => {
 			// пройдем по всем эл-там и добавим их в начальное значение. Каждый шаг новое значение
 			// вместо [] передаётся в аргумент arr
 		}, []);
+	
 	if (transformIngredients.length === 0) {
 		transformIngredients = <p>Please start adding ingredients!</p>
 	}

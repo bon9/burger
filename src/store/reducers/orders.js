@@ -18,21 +18,29 @@ const reducer = (state = initialState, action) => {
 			return updateObject(state, { loading: false,
 																	 purchased: true,
 																	 orders: state.orders.concat(newOrder) })
+																	 
 		case actionTypes.PURCHASE_BURGER_FAIL:
 			return updateObject(state, { loading: false })
+
 		case actionTypes.PURCHASE_BURGER_START:
 			return updateObject(state, { loading: true })
+
 		case actionTypes.PURCHASE_INIT:
 			return updateObject(state, { purchased: false })
+
 		case actionTypes.FETCH_ORDERS_START:
 			return updateObject(state, { loading: true })
+
 		case actionTypes.FETCH_ORDERS_SUCCESS:
 			return updateObject(state, { orders: action.orders,	loading: false })
+
 		case actionTypes.FETCH_ORDERS_FAIL:
 			return updateObject(state, { loading: false })
+
 		case actionTypes.DELETE_ORDER:
 			const newOrders = state.orders.filter(res => res.id !== action.id);
 			return updateObject(state, { orders: newOrders })
+
 		default: return state;
 	}
 
