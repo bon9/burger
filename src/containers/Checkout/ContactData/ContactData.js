@@ -8,6 +8,7 @@ import axios from "../../../axios-orders";
 import Input from "../../../components/UI/Input/Input";
 import withErrorHandler from "../../../hoc/withErrorHandler/withErrorHandler";
 import * as actions from "../../../store/actions/index";
+import { updateObject, checkValidity } from "./../../../shared/utility";
 
 class ContactData extends Component {
   state = {
@@ -95,7 +96,7 @@ class ContactData extends Component {
         },
         value: "fastest",
         validation: {
-          required: false
+          required: true
         },
         valid: true
       }
@@ -125,52 +126,30 @@ class ContactData extends Component {
     this.props.onOrderBurger(order, this.props.token);
   };
 
-  // проверка поля на валидность
-  checkValidity(value, rules) {
-    let isValid = false;
-    if (!rules) return true; // если правила нет, то вернуть true
-    // если updateFormElement.validation.required = true
-    // то проверяем не пустое ли поле, не считая пробелы (trim)
-    if (rules.required) {
-      isValid = value.trim() !== ""; //если не пустое - вернёт true
-    }
-
-    // если такие правила сущестуют
-    if (rules.minLength && rules.maxLength) {
-      isValid =
-        rules.minLength >= value.length && rules.maxLength <= value.length;
-    }
-    return isValid;
-  }
-
   // срабатывает при вводе каждого символа в input
   // inputIdentifier = name, street, mail..
   inputChangedHandler = (event, inputIdentifier) => {
-    const updateOrderForm = {
-      ...this.state.orderForm // updateOrderForm = orderForm
-    };
-    const updateFormElement = {
-      ...updateOrderForm[inputIdentifier] // updateFormElement = updateOrderForm[name]
-    };
-    updateFormElement.value = event.target.value; // name: {value = ..}
-    // name.valid = checkValidity(значение инпута, validation(правило которое указанно в стейте элемента)
-    // valid установится в true/false
-    if (updateFormElement.validation.required) {
-      // проверка на требуемость проверки
-      updateFormElement.valid = this.checkValidity(
-        updateFormElement.value,
-        updateFormElement.validation
-      );
-    }
-    updateFormElement.touched = true; // касание в поле
-    updateOrderForm[inputIdentifier] = updateFormElement; // обновляем name
+    const updateFormElement = updateObject(
+      this.state.orderForm[inputIdentifier],
+      {
+        value: event.target.value, // name: {value = ..}
+        valid: checkValidity(
+          event.target.value,
+          this.state.orderForm[inputIdentifier].validation
+        ),
+        touched: true // касание в поле
+      }
+    );
+
+    const updateOrderForm = updateObject(this.state.orderForm, {
+      [inputIdentifier]: updateFormElement
+    });
 
     // заполнена ли форма
     let formIsValid = true;
     for (let inputIdentifier in updateOrderForm) {
       formIsValid = updateOrderForm[inputIdentifier].valid && formIsValid;
     }
-    console.log(formIsValid);
     this.setState({ orderForm: updateOrderForm, formIsValid });
   };
 

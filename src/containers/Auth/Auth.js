@@ -7,6 +7,7 @@ import Input from "../../components/UI/Input/Input";
 import classes from "./Auth.css";
 import * as actions from "../../store/actions/index";
 import Spinner from "../../components/UI/Spinner/Spinner";
+import { updateObject, checkValidity } from "./../../shared/utility";
 
 export class Auth extends Component {
   state = {
@@ -53,39 +54,17 @@ export class Auth extends Component {
     }
   }
 
-  checkValidity(value, rules) {
-    let isValid = false;
-    if (!rules) return true; // если правила нет, то вернуть true
-    // если updateFormElement.validation.required = true
-    // то проверяем не пустое ли поле, не считая пробелы (trim)
-    if (rules.required) {
-      isValid = value.trim() !== ""; //если не пустое - вернёт true
-    }
-
-    // если такие правила сущестуют
-    if (rules.minLength) {
-      isValid = rules.minLength <= value.length;
-    }
-    if (rules.maxLength) {
-      isValid = rules.maxLength >= value.length;
-    }
-
-    return isValid;
-  }
-
   inputChangedHandler = (event, controlName) => {
-    const updatedControls = {
-      ...this.state.controls,
-      [controlName]: {
-        ...this.state.controls[controlName],
+    const updatedControls = updateObject(this.state.controls, {
+      [controlName]: updateObject(this.state.controls[controlName], {
         value: event.target.value,
-        valid: this.checkValidity(
+        valid: checkValidity(
           event.target.value,
           this.state.controls[controlName].validation
         ),
         touched: true
-      }
-    };
+      })
+    });
     this.setState({ controls: updatedControls });
   };
 

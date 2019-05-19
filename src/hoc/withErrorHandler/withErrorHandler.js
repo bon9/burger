@@ -1,51 +1,54 @@
-import React, { Component } from 'react';
-import Modal from '../../components/UI/Modal/Modal';
-import Aux from '../Auxiliary/Auxiliary';
+import React, { Component } from "react";
+import Modal from "../../components/UI/Modal/Modal";
+import Aux from "../Auxiliary/Auxiliary";
 
 const withErrorHandler = (WrappedComponent, axios) => {
-	return class extends Component {
-		state = {
-			error: null
-		}
+  return class extends Component {
+    state = {
+      error: null
+    };
 
-		componentWillMount() {
-			this.reqInterceptor = axios.interceptors.request.use(req => {
-				this.setState({ error: null });
-				return req;
-			})
-			// интересует только второй аргумент
-			this.resInterceptor = axios.interceptors.response.use(res => res, error => {
-				this.setState({ error: error })
-			})
-		}
+    componentWillMount() {
+      this.reqInterceptor = axios.interceptors.request.use(req => {
+        this.setState({ error: null });
+        return req;
+      });
+      // интересует только второй аргумент
+      this.resInterceptor = axios.interceptors.response.use(
+        res => res,
+        error => {
+          this.setState({ error: error });
+        }
+      );
+    }
 
-		// удаляем ненужные перехватчики, чтобы они не копились от каждого компонента
-		// который обрернут в withErrorHandler
-		componentWillUnmount() {
-			console.log('Will Unmount', this.reqInterceptor, this.resInterceptor);
-			axios.interceptors.request.eject(this.reqInterceptor);
-			axios.interceptors.response.eject(this.resInterceptor);
-		}
+    // удаляем ненужные перехватчики, чтобы они не копились от каждого компонента
+    // который обрернут в withErrorHandler
+    componentWillUnmount() {
+      axios.interceptors.request.eject(this.reqInterceptor);
+      axios.interceptors.response.eject(this.resInterceptor);
+    }
 
-		errorConfirmedHandler = () => {
-			this.setState({ error: null })
-		}
+    errorConfirmedHandler = () => {
+      this.setState({ error: null });
+    };
 
-		render() {
-			return (
-				// выводим модалку с надписью и 
-				// возвращаем компонет пришедший в аргументе и все его пропс
-				<Aux>
-					<Modal
-						show={this.state.error}
-						modalClosed={this.errorConfirmedHandler}>
-						{this.state.error ? this.state.error.message : null}
-					</Modal>
-					<WrappedComponent {...this.props} />
-				</Aux>
-			);
-		}
-	}
-}
+    render() {
+      return (
+        // выводим модалку с надписью и
+        // возвращаем компонет пришедший в аргументе и все его пропс
+        <Aux>
+          <Modal
+            show={this.state.error}
+            modalClosed={this.errorConfirmedHandler}
+          >
+            {this.state.error ? this.state.error.message : null}
+          </Modal>
+          <WrappedComponent {...this.props} />
+        </Aux>
+      );
+    }
+  };
+};
 
 export default withErrorHandler;

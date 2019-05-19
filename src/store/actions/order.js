@@ -69,7 +69,7 @@ export const fetchOrders = (token, userId) => {
     dispatch(fetchOrdersStart());
     // правила в проэкте на firebase
     const queryParams = `?auth=${token}&orderBy="userId"&equalTo="${userId}"`;
-    console.log(queryParams);
+    // console.log(queryParams);
     axios
       .get("/orders.json" + queryParams)
       .then(response => {
