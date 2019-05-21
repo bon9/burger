@@ -46,7 +46,7 @@ class ContactData extends Component {
         elementType: "input",
         elementConfig: {
           type: "text",
-          placeholder: "ZIP Code"
+          placeholder: "ZIP Code (3 characters)"
         },
         value: "",
         validation: {

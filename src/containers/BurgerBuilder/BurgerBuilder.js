@@ -38,6 +38,7 @@ export class BurgerBuilder extends Component {
       this.setState({ purchasing: true });
     } else {
       // если auth = false устанавливаем authRedirectPath в state на /checkout
+      // чтобы после регистрации нас вернуло сразу на чекаут
       // и перекидываем на стр auth
       this.props.onSetAuthRedirectPath("/checkout");
       this.props.history.push("/auth");

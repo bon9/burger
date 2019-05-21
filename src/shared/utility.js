@@ -16,11 +16,14 @@ export const checkValidity = (value, rules) => {
 
   // если такие правила сущестуют
   if (rules.minLength) {
-    isValid = rules.minLength < value.length;
+    isValid = rules.minLength <= value.length;
   }
   if (rules.maxLength) {
-    isValid = rules.maxLength > value.length;
+    isValid = rules.minLength >= value.length;
   }
-
+  if (rules.minLength && rules.maxLength) {
+    isValid =
+      rules.minLength <= value.length && rules.maxLength >= value.length;
+  }
   return isValid;
 };

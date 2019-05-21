@@ -31,7 +31,7 @@ export class Auth extends Component {
         elementType: "input",
         elementConfig: {
           type: "password",
-          placeholder: "Enter password"
+          placeholder: "Enter password (min 6 characters)"
         },
         value: "",
         validation: {
@@ -116,7 +116,7 @@ export class Auth extends Component {
     }
 
     let authRedirect = null;
-    // после аутентификации переходим на стартовую
+    // после аутентификации переходим на стартовую или на checkout
     if (this.props.isAuthenticated) {
       authRedirect = <Redirect to={this.props.authRedirectPath} />;
     }

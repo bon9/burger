@@ -60,6 +60,7 @@ export const auth = (email, password, isSignup) => {
       .post(url, authData)
       .then(response => {
         // отправляем в Storage token и время до которого он будет действовать
+        // expiresIn - кол-во секунд, которое будет действовать token пришедший
         const expirationDate = new Date(
           new Date().getTime() + response.data.expiresIn * 1000
         );
@@ -70,7 +71,7 @@ export const auth = (email, password, isSignup) => {
         dispatch(checkAuthTimeout(response.data.expiresIn));
       })
       .catch(err => {
-        dispatch(authFail(err.response.data.error));
+        dispatch(authFail(err));
       });
   };
 };
