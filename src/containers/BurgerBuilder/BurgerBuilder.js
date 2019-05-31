@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import Aux from "../../hoc/Auxiliary/Auxiliary";
@@ -11,16 +11,14 @@ import withErrorHandler from "../../hoc/withErrorHandler/withErrorHandler";
 import axios from "../../axios-orders";
 import * as actions from "../../store/actions/index";
 
-export class BurgerBuilder extends Component {
-  state = {
-    purchasing: false // отображение orderSummary
-  };
+export const BurgerBuilder = props => {
+  const [purchasing, setPurchasing] = useState(false); // отображение orderSummary
 
-  componentDidMount() {
-    this.props.onInitIngredients();
-  }
+  useEffect(() => {
+    props.onInitIngredients();
+  }, []);
 
-  updatePurchaseState = ingredients => {
+  const updatePurchaseState = ingredients => {
     // salad: 5, bacon: 3 ..
     const sum = Object.keys(ingredients) // ['salad', 'bacon']
       .map(igKey => {
@@ -33,88 +31,82 @@ export class BurgerBuilder extends Component {
     return sum > 0;
   };
 
-  purchaseHandler = () => {
-    if (this.props.isAuth) {
-      this.setState({ purchasing: true });
+  const purchaseHandler = () => {
+    if (props.isAuth) {
+      setPurchasing(true);
     } else {
       // если auth = false устанавливаем authRedirectPath в state на /checkout
       // чтобы после регистрации нас вернуло сразу на чекаут
       // и перекидываем на стр auth
-      this.props.onSetAuthRedirectPath("/checkout");
-      this.props.history.push("/auth");
+      props.onSetAuthRedirectPath("/checkout");
+      props.history.push("/auth");
     }
   };
 
-  purchaseCancelHandler = () => {
-    this.setState({ purchasing: false });
+  const purchaseCancelHandler = () => {
+    setPurchasing(false);
   };
 
-  purchaseContinueHadler = () => {
-    this.props.onInitPurchase();
-    this.props.history.push("/checkout");
+  const purchaseContinueHadler = () => {
+    props.onInitPurchase();
+    props.history.push("/checkout");
   };
 
-  render() {
-    const disabledInfo = {
-      // props.ings получаем с connect
-      ...this.props.ings // копируем текущее сост
-    };
-    // присвоим каждому ключу (ингредиенту) true/false
-    // {salad: true, meat: false, ...}
-    for (let key in disabledInfo) {
-      // disabledInfo[key] = true если disabledInfo[key] <= 0
-      disabledInfo[key] = disabledInfo[key] <= 0;
-    }
-    let orderSummary = null;
-    let burger = this.props.error ? (
-      <p>Ingredients can't be loaded</p>
-    ) : (
-      <Spinner />
-    );
-    // как только ингридиенты считываются с базы в стейт, то выводи ...
-    if (this.props.ings) {
-      burger = (
-        <Aux>
-          <Burger ingredients={this.props.ings} />
-          <BuildControls
-            //аргумент для ingName передается в самом BuildControls
-            ingredientAdded={this.props.onIngredientAdd}
-            ingredientRemoved={this.props.onIngredientRemove}
-            disabled={disabledInfo} // Less button on/off
-            price={this.props.price}
-            purchaseble={this.updatePurchaseState(this.props.ings)} // Order button active on/off
-            ordered={this.purchaseHandler} // Order button click
-            isAuth={this.props.isAuth}
-          />
-        </Aux>
-      );
-      orderSummary = (
-        <OrderSummary
-          ingredients={this.props.ings}
-          // кнопка Cancel в модальном
-          purchaseCancelled={this.purchaseCancelHandler}
-          // кнопка Continue в модальном
-          purchaseContinued={this.purchaseContinueHadler}
-          price={this.props.price}
-        />
-      );
-    }
-
-    return (
+  const disabledInfo = {
+    // props.ings получаем с connect
+    ...props.ings // копируем текущее сост
+  };
+  // присвоим каждому ключу (ингредиенту) true/false
+  // {salad: true, meat: false, ...}
+  for (let key in disabledInfo) {
+    // disabledInfo[key] = true если disabledInfo[key] <= 0
+    disabledInfo[key] = disabledInfo[key] <= 0;
+  }
+  let orderSummary = null;
+  let burger = props.error ? <p>Ingredients can't be loaded</p> : <Spinner />;
+  // как только ингридиенты считываются с базы в стейт, то выводи ...
+  if (props.ings) {
+    burger = (
       <Aux>
-        <Modal
-          // отображение модального окна
-          show={this.state.purchasing}
-          // фон при активном модальном окне
-          modalClosed={this.purchaseCancelHandler}
-        >
-          {orderSummary}
-        </Modal>
-        {burger}
+        <Burger ingredients={props.ings} />
+        <BuildControls
+          //аргумент для ingName передается в самом BuildControls
+          ingredientAdded={props.onIngredientAdd}
+          ingredientRemoved={props.onIngredientRemove}
+          disabled={disabledInfo} // Less button on/off
+          price={props.price}
+          purchaseble={updatePurchaseState(props.ings)} // Order button active on/off
+          ordered={purchaseHandler} // Order button click
+          isAuth={props.isAuth}
+        />
       </Aux>
     );
+    orderSummary = (
+      <OrderSummary
+        ingredients={props.ings}
+        // кнопка Cancel в модальном
+        purchaseCancelled={purchaseCancelHandler}
+        // кнопка Continue в модальном
+        purchaseContinued={purchaseContinueHadler}
+        price={props.price}
+      />
+    );
   }
-}
+
+  return (
+    <React.Fragment>
+      <Modal
+        // отображение модального окна
+        show={purchasing}
+        // фон при активном модальном окне
+        modalClosed={purchaseCancelHandler}
+      >
+        {orderSummary}
+      </Modal>
+      {burger}
+    </React.Fragment>
+  );
+};
 
 const mapStateToProps = state => {
   return {
