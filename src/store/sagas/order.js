@@ -27,6 +27,7 @@ export function* fetchOrdersSaga(action) {
   }"`;
   // console.log(queryParams);
   const response = yield axios.get("/orders.json" + queryParams);
+  console.log(response);
   try {
     const fetchedOrders = [];
     for (let key in response.data) {
